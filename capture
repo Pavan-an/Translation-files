@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Photo + Location Capture</h2>
+
+<video id="video" width="300" autoplay></video><br>
+<button id="captureBtn">Capture Photo</button>
+
+<canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
+
+<p id="location"></p>
+
+<script>
+// Start front camera
+navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "user" }
+}).then(stream => {
+    document.getElementById("video").srcObject = stream;
+}).catch(err => alert("Camera access denied: " + err));
+
+// Capture photo
+document.getElementById("captureBtn").onclick = () => {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imgData = canvas.toDataURL("image/png");
+    console.log("Captured Image:", imgData);  // You can POST to your server
+};
+
+// Get location
+navigator.geolocation.getCurrentPosition(pos => {
+    document.getElementById("location").innerText =
+        `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
+}, err => {
+    alert("Location access denied: " + err.message);
+});
+</script>
+
+</body>
+</html>
